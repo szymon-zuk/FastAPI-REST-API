@@ -1,14 +1,12 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
-@app.get("/")
-def root():
-    return {"message": {"name": "Szymson"}}
+class Blog(BaseModel):
+    title: str
+    body: str
 
-
-# path parameters
-@app.get("/blog/{id}")
-def show(id: int):
-    #fetch blog with id = id
-    return {"data": id}
+@app.post("/blog")
+def create(request: Blog):
+    return request
