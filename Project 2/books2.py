@@ -39,7 +39,7 @@ class BookRequest(BaseModel):
                 "author": "Szymson",
                 "description": "New description",
                 "rating": 5,
-                "published_date": 2012
+                "published_date": 2012,
             }
         }
 
@@ -51,7 +51,7 @@ BOOKS = [
         author="Szymson",
         description="very nois book",
         rating=5,
-        published_date=2012
+        published_date=2012,
     ),
     Book(
         id=2,
@@ -59,12 +59,24 @@ BOOKS = [
         author="Sapkowski",
         description="very nois book",
         rating=5,
-        published_date=2016
+        published_date=2016,
     ),
     Book(
-        id=3, title="DupaDupa", author="Szymson", description="very nois book", rating=4, published_date=2018
+        id=3,
+        title="DupaDupa",
+        author="Szymson",
+        description="very nois book",
+        rating=4,
+        published_date=2018,
     ),
-    Book(id=4, title="Potop", author="Sienkiewicz", description="słabe", rating=3, published_date=2024),
+    Book(
+        id=4,
+        title="Potop",
+        author="Sienkiewicz",
+        description="słabe",
+        rating=3,
+        published_date=2024,
+    ),
 ]
 
 
