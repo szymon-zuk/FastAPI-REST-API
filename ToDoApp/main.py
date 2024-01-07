@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Path
+from pydantic import BaseModel, Field
 from starlette import status
 from starlette.exceptions import HTTPException
 import models
@@ -10,6 +11,13 @@ from sqlalchemy.orm import Session
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
+
+
+class TodoRequest(BaseModel):
+    title: str = Field(min_length=3)
+    description: str = Field(min_length=3, max_length=100)
+    priority: int = Field(gt=0, lt=6)
+    complete: bool
 
 
 def get_db():
@@ -34,3 +42,10 @@ async def read_todo(db: db_dependency, todo_id: int = Path(gt=0)):
     if todo_model is not None:
         return todo_model
     raise HTTPException(status_code=404, detail="Todo not found")
+
+
+@app.post("/todo", status_code=status.HTTP_201_CREATED)
+async def create_todo(db: db_dependency, todo_request: TodoRequest):
+    todo_model = ToDos(**todo_request.model_dump())
+    db.add(todo_model)
+    db.commit()
