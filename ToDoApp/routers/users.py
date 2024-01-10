@@ -5,9 +5,10 @@ from models import ToDos, Users
 from database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
-from .auth import get_current_user, bcrypt_context
+from .auth import get_current_user
+from passlib.context import CryptContext
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/user", tags=["user"])
 
 
 def get_db():
@@ -24,13 +25,14 @@ class ChangePasswordRequest(BaseModel):
 
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[Users, Depends(get_current_user)]
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @router.get("/get_user", status_code=status.HTTP_200_OK)
-async def get_user(user: user_dependency):
+async def get_user(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
-    return user
+    return db.query.filter(Users.id == user.get("id")).first()
 
 
 @router.put("/change_password", status_code=status.HTTP_204_NO_CONTENT)
