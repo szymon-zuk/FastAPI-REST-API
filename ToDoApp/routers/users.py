@@ -21,6 +21,7 @@ def get_db():
 
 class ChangePasswordRequest(BaseModel):
     password: str
+    new_password: str = Field(min_length=6)
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -44,9 +45,11 @@ async def change_password(
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     user_model = db.query(Users).filter(Users.id == user.get("id")).first()
-    if user_model is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    new_password = change_password_request.password
-    user_model.hashed_password = bcrypt_context.hash(new_password)
+    if not bcrypt_context.verify(
+        change_password_request.password, user_model.hashed_password
+    ):
+        raise HTTPException(status_code=401, detail="Passwords are not the same")
+    new_password_from_request = change_password_request.new_password
+    user_model.hashed_password = bcrypt_context.hash(new_password_from_request)
     db.add(user_model)
     db.commit()
