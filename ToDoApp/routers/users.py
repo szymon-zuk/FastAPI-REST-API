@@ -29,6 +29,10 @@ user_dependency = Annotated[Users, Depends(get_current_user)]
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+class ChangePhoneNumberRequest(BaseModel):
+    new_phone_number: str = Field(min_length=6, max_length=9)
+
+
 @router.get("/get_user", status_code=status.HTTP_200_OK)
 async def get_user(user: user_dependency, db: db_dependency):
     if user is None:
@@ -52,5 +56,20 @@ async def change_password(
         raise HTTPException(status_code=401, detail="Passwords are not the same")
     new_password_from_request = change_password_request.new_password
     user_model.hashed_password = bcrypt_context.hash(new_password_from_request)
+    db.add(user_model)
+    db.commit()
+
+
+@router.put("/change_phone_number", status_code=status.HTTP_204_NO_CONTENT)
+async def change_phone_number(
+    user: user_dependency,
+    db: db_dependency,
+    change_phone_request: ChangePhoneNumberRequest,
+):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Authentication failed")
+    user_model = db.query(Users).filter(Users.id == user.get("id")).first()
+    new_phone_number = change_phone_request.new_phone_number
+    user_model.phone_number = new_phone_number
     db.add(user_model)
     db.commit()
