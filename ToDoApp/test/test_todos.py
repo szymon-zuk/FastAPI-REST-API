@@ -9,7 +9,7 @@ from fastapi import status
 import pytest
 from ..models import ToDos
 
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./testdb.db'
+SQLALCHEMY_DATABASE_URL = "sqlite:///./testdb.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -21,6 +21,7 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 Base.metadata.create_all(bind=engine)
 
+
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -28,13 +29,16 @@ def override_get_db():
     finally:
         db.close()
 
+
 def override_get_current_user():
     return {"username": "szyms0n", "id": 1, "user_role": "admin"}
+
 
 app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_current_user] = override_get_current_user
 
 client = TestClient(app)
+
 
 @pytest.fixture
 def test_todo():
@@ -43,7 +47,7 @@ def test_todo():
         description="codziennie",
         priority=5,
         complete=False,
-        owner_id=1
+        owner_id=1,
     )
 
     db = TestingSessionLocal()
@@ -54,7 +58,17 @@ def test_todo():
         connection.execute(text("DELETE FROM todos;"))
         connection.commit()
 
+
 def test_read_all_authenticated(test_todo):
     response = client.get("/")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{"complete": False, "title": "Nauka FastAPI", "description": "codziennie", "id": 1, "priority": 5, "owner_id": 1}]
+    assert response.json() == [
+        {
+            "complete": False,
+            "title": "Nauka FastAPI",
+            "description": "codziennie",
+            "id": 1,
+            "priority": 5,
+            "owner_id": 1,
+        }
+    ]
