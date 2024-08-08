@@ -54,6 +54,10 @@ cover/
 # Translations
 *.mo
 *.pot
+*.xml
+*.iml
+*.db
+.gitignore
 
 # Django stuff:
 *.log
