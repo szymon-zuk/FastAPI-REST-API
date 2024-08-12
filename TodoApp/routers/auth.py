@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+import models
+from database import SessionLocal, engine
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -9,9 +11,6 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-
-from TodoApp import models
-from TodoApp.database import SessionLocal, engine
 
 SECRET_KEY = "KlgH6AzYDeZeGwD288to79I3vTHT8wp7"
 ALGORITHM = "HS256"
