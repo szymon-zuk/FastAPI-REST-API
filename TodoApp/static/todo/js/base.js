@@ -47,7 +47,7 @@ if (editTodoForm) {
         const form = event.target;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        var url = window.location.pathname;
+        let url = window.location.pathname;
         const todoId = url.substring(url.lastIndexOf('/') + 1);
 
         const payload = {
@@ -59,15 +59,15 @@ if (editTodoForm) {
 
         try {
             const token = getCookie('access_token');
-            console.log(token)
+            console.log(token);
             if (!token) {
                 throw new Error('Authentication token not found');
             }
 
             console.log(`${todoId}`)
 
-            const response = await fetch(`/todos/todo/${todoId}`, {
-                method: 'PUT',
+            const response = await fetch(`/todos/edit-todo/${todoId}`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -89,7 +89,7 @@ if (editTodoForm) {
     });
 
     document.getElementById('deleteButton').addEventListener('click', async function () {
-        var url = window.location.pathname;
+        let url = window.location.pathname;
         const todoId = url.substring(url.lastIndexOf('/') + 1);
 
         try {
@@ -228,7 +228,7 @@ function getCookie(name) {
         }
     }
     return cookieValue;
-};
+}
 
 function logout() {
     // Get all cookies
@@ -245,4 +245,4 @@ function logout() {
 
     // Redirect to the login page
     window.location.href = '/auth/login-page';
-};
+}
