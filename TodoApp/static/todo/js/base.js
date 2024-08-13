@@ -183,15 +183,15 @@ if (registerForm) {
         const payload = {
             email: data.email,
             username: data.username,
-            first_name: data.firstname,
-            last_name: data.lastname,
+            first_name: data.first_name,
+            last_name: data.last_name,
             role: data.role,
             phone_number: data.phone_number,
             password: data.password
         };
 
         try {
-            const response = await fetch('/auth', {
+            const response = await fetch('/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -200,7 +200,7 @@ if (registerForm) {
             });
 
             if (response.ok) {
-                window.location.href = '/auth/login-page';
+                window.location.href = '/auth';
             } else {
                 // Handle error
                 const errorData = await response.json();
