@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -65,7 +65,7 @@ def authenticate_user(
     user = db.query(models.Users).filter(models.Users.username == username).first()
 
     if not user or not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
 
@@ -98,7 +98,7 @@ async def get_current_user(request: Request):
 @router.post("/token")
 async def login_for_access_token(
     response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: LoginForm = Depends(),
     db: Session = Depends(get_db),
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
