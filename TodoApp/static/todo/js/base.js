@@ -232,3 +232,34 @@ function logout() {
     // Redirect to the login page
     window.location.href = '/auth/login-page';
 }
+
+// Change password JS
+const changePasswordForm = document.getElementById('changePasswordForm');
+if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+
+        try {
+            const response = await fetch('/auth/change-password', {
+                method: 'POST',
+                body: formData
+            });
+            console.log(response);
+
+            if (response.ok) {
+                window.location.href = '/auth';
+            } else {
+                // Handle error
+                const errorData = await response.text();
+                document.documentElement.innerHTML = errorData
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+}

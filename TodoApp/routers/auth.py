@@ -189,3 +189,45 @@ async def register_user(
 
     msg = "User successfully created"
     return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
+
+
+@router.get("/change-password", response_class=HTMLResponse)
+async def change_password(request: Request):
+    return templates.TemplateResponse("change-password.html", {"request": request})
+
+
+@router.post("/change-password", response_class=HTMLResponse)
+async def change_password_commit(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    new_password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    user = db.query(models.Users).filter(models.Users.username == username).first()
+
+    if user is None:
+        msg = "There is no user with such username"
+        return templates.TemplateResponse(
+            "change-password.html",
+            {"request": request, "msg": msg},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not verify_password(password, user.hashed_password):
+        msg = "Invalid current password"
+        return templates.TemplateResponse(
+            "change-password.html",
+            {"request": request, "msg": msg},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user.hashed_password = get_password_hash(new_password)
+    db.commit()
+
+    msg = "Password successfully changed"
+    return templates.TemplateResponse(
+        "change-password.html",
+        {"request": request, "msg": msg},
+        status_code=status.HTTP_200_OK,
+    )
