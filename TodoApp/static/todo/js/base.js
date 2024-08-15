@@ -58,21 +58,9 @@ if (editTodoForm) {
         };
 
         try {
-            const token = getCookie('access_token');
-            console.log(token);
-            if (!token) {
-                throw new Error('Authentication token not found');
-            }
-
-            console.log(`${todoId}`)
-
             const response = await fetch(`/todos/edit-todo/${todoId}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
+                body: formData
             });
 
             if (response.ok) {
@@ -193,11 +181,9 @@ if (registerForm) {
         try {
             const response = await fetch('/auth/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+                body: formData
             });
+            console.log(response);
 
             if (response.ok) {
                 window.location.href = '/auth';
